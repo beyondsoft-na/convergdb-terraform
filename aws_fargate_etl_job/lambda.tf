@@ -53,6 +53,13 @@ resource "aws_iam_role_policy" "run_task" {
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
     }
   ]
 }
