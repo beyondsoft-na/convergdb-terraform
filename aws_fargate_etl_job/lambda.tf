@@ -63,6 +63,7 @@ resource "aws_s3_bucket_object" "fargate_lambda_trigger_script" {
   bucket   = "${var.admin_bucket}"
   key      = "${var.lambda_trigger_key}"
   source   = "${path.module}/convergdb-${var.etl_job_name}.zip"
+  depends_on = ["${data.archive_file.lambda_package}"]
 }
 
 resource "aws_lambda_function" "test_lambda" {
