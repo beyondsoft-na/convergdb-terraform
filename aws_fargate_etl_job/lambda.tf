@@ -61,5 +61,6 @@ resource "aws_lambda_function" "test_lambda" {
   function_name    = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
   source_code_hash = "${base64sha256(file("${data.template_file.fargate_lambda_trigger.rendered}"))}"
+  handler          = "handler"
   runtime          = "python2.7"
 }
