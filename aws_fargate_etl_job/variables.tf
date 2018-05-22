@@ -24,12 +24,14 @@ variable "local_pyspark_library" {}
 variable "script_bucket" {}
 variable "script_key" {}
 variable "pyspark_library_key" {}
+variable "lambda_trigger_key" {}
 
 variable "admin_bucket" {}
 variable "data_bucket" {}
 variable "cloudwatch_namespace" {}
 variable "sns_topic" {}
 
+variable "ecs_subnet" {}
 variable "ecs_cluster" {} 
 variable "ecs_log_group" {}
 variable "docker_image" {}
