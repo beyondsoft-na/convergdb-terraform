@@ -135,11 +135,11 @@ resource "aws_ecs_task_definition" "convergdb_ecs_task" {
     "environment": [
       {
         "name": "CONVERGDB_LIBRARY",
-        "value": "${var.convergdb_pyspark_library}"
+        "value": "s3://${var.script_bucket}/${var.pyspark_library_key}"
       },
       {
         "name": "CONVERGDB_SCRIPT",
-        "value": "${var.convergdb_etl_script}"
+        "value": "s3://${var.script_bucket}/${var.script_key}"
       }
     ],
     "logConfiguration": {
