@@ -19,7 +19,3 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "current" {}
-
-resource "aws_sns_topic" "convergdb-notifications" {
-  name = "convergdb-${var.deployment_id}"
-}

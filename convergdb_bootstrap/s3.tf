@@ -14,13 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# AWS provider
-provider "aws" {
-  region = "${var.region}"
-}
-
-data "aws_region" "current" {}
-
 # s3 buckets
 resource "aws_s3_bucket" "admin" {
   bucket = "${var.admin_bucket}"
