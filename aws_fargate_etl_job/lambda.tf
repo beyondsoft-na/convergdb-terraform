@@ -11,6 +11,16 @@ data "template_file" "fargate_lambda_trigger" {
   }
 }
 
+data "archive_file" "lambda_package" {
+  type        = "zip"
+  output_path = "${path.module}/convergdb-${var.etl_job_name}.zip"
+
+  source {
+    content  = "${data.template_file.fargate_lambda_trigger.rendered}"
+    filename = "convergdb-trigger.py"
+  }
+}
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
   assume_role_policy = <<EOF
@@ -50,9 +60,9 @@ EOF
 }
 
 resource "aws_s3_bucket_object" "fargate_lambda_trigger_script" {
-  bucket = "${var.admin_bucket}"
-  key    = "${var.lambda_trigger_key}"
-  content = "${data.template_file.fargate_lambda_trigger.rendered}"
+  bucket   = "${var.admin_bucket}"
+  key      = "${var.lambda_trigger_key}"
+  source   = "${path.module}/convergdb-${var.etl_job_name}.zip"
 }
 
 resource "aws_lambda_function" "test_lambda" {
@@ -60,7 +70,7 @@ resource "aws_lambda_function" "test_lambda" {
   s3_key           = "${aws_s3_bucket_object.fargate_lambda_trigger_script.id}"
   function_name    = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
-  source_code_hash = "${base64sha256("${data.template_file.fargate_lambda_trigger.rendered}")}"
-  handler          = "handler"
+  source_code_hash = "${base64sha256(file("${path.module}/convergdb-${var.etl_job_name}.zip"))}"
+  handler          = "convergdb-trigger.handler"
   runtime          = "python2.7"
 }
