@@ -49,7 +49,7 @@ resource "aws_iam_role_policy" "run_task" {
   "Statement": [
     {
       "Action": [
-        "glue:RunTask"
+        "ecs:RunTask"
       ],
       "Effect": "Allow",
       "Resource": "*"
