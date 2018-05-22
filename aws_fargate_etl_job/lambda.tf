@@ -21,13 +21,6 @@ data "archive_file" "lambda_package" {
   }
 }
 
-# resource "aws_s3_bucket_object" "fargate_lambda_trigger_script" {
-#   bucket   = "${var.admin_bucket}"
-#   key      = "${var.lambda_trigger_key}"
-#   source   = "${path.module}/convergdb-${var.etl_job_name}.zip"
-#   depends_on = ["${data.archive_file.lambda_package}"]
-# }
-
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
   assume_role_policy = <<EOF
@@ -67,8 +60,6 @@ EOF
 }
 
 resource "aws_lambda_function" "test_lambda" {
-  # s3_bucket        = "${var.admin_bucket}"
-  # s3_key           = "${aws_s3_bucket_object.fargate_lambda_trigger_script.id}"
   filename         = "${data.archive_file.lambda_package.output_path}"
   function_name    = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   role             = "${aws_iam_role.iam_for_lambda.arn}"

@@ -31,7 +31,7 @@ def run_fargate_task(cluster_name, task_arn, task_role_arn, subnet, memory, cpu)
   pp = pprint.PrettyPrinter(indent=4)
   pp.pprint(response)
 
-def handler_name(event, context):
+def handler(event, context):
   run_fargate_task(
     "${cluster_name}", 
     "${task_arn}", 
