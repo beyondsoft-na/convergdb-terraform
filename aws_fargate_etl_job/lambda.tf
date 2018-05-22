@@ -71,7 +71,7 @@ resource "aws_lambda_function" "test_lambda" {
   s3_key           = "${aws_s3_bucket_object.fargate_lambda_trigger_script.id}"
   function_name    = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
-  source_code_hash = "${base64sha256(file("${path.module}/convergdb-${var.etl_job_name}.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_package.output_base64sha256}"
   handler          = "convergdb-trigger.handler"
   runtime          = "python2.7"
 }
