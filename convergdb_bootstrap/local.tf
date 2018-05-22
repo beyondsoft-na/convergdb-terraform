@@ -25,7 +25,7 @@ resource "local_file" "main_backend" {
         "bucket" : "${var.admin_bucket}",
         "key" : "terraform/convergdb.tfstate",
         "dynamodb_table" : "${var.lock_table}",
-        "region" : "${data.aws_region.current.name}"
+        "region" : "${var.region}"
       }
     }
   }
@@ -41,7 +41,7 @@ variable "deployment_id" {
 }
 
 variable "region" {
-  default = "${data.aws_region.current.name}"
+  default = "${var.region}"
 }
 
 variable "admin_bucket" {
