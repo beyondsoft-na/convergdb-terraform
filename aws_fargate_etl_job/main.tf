@@ -18,7 +18,7 @@ provider "aws" {
   region = "${var.region}"
 }
 
-resource "aws_s3_object" "convergdb_library" {
+resource "aws_s3_bucket_object" "convergdb_library" {
   bucket   = "${var.script_bucket}"
   key      = "${var.pyspark_library_key}"
   source   = "${var.local_pyspark_library}"
