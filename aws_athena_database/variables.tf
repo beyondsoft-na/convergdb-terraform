@@ -14,6 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# region where the database need to be deployed
 variable "region" {}
+
+# cloudformation stack in json format to used for the build
 variable "stack" {}
+
+# id for this convergdb deployment
 variable "deployment_id" {}
