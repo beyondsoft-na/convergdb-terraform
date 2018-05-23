@@ -2,9 +2,19 @@ exit_code=0
 
 echo "initializing terraform deployment and getting modules..."
 terraform init
+if [ $? != 0 ]
+  then
+    echo "terraform init failed"
+    exit_code=1;
+fi
 
 echo "applying terraform deployment..."
 terraform apply --auto-approve
+if [ $? != 0 ]
+  then
+    echo "terraform apply failed"
+    exit_code=1;
+fi
 
 echo "confirm that database was created"
 aws glue get-database --name integration_test_databaseintegrationtest
