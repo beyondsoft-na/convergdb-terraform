@@ -42,4 +42,4 @@ def handler(event, context):
     ${memory}, 
     ${cpu}
   )
-  return {"taskArn": response["tasks"][0]["taskArn"]}
+  return { "taskArn": response["tasks"][0]["taskArn"] }
