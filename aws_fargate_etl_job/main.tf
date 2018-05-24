@@ -146,7 +146,7 @@ resource "aws_ecs_task_definition" "convergdb_ecs_task" {
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "${var.ecs_log_group}",
-        "awslogs-region": "us-west-2",
+        "awslogs-region": "${var.region}",
         "awslogs-stream-prefix": "${var.etl_job_name}"
       }
     }
