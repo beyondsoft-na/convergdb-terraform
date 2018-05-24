@@ -22,7 +22,7 @@ data "archive_file" "lambda_package" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+  name = "convergdb-${var.deployment_id}-${var.etl_job_name}-fargate-trigger"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
