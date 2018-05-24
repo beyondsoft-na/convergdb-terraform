@@ -1,6 +1,7 @@
 from __future__ import print_function
 import pprint
 import boto3
+import json
 
 def run_fargate_task(cluster_name, task_arn, task_role_arn, subnet, memory, cpu):
   print("executing ecs fargate task with the following parameters...")
@@ -33,7 +34,7 @@ def run_fargate_task(cluster_name, task_arn, task_role_arn, subnet, memory, cpu)
   return response
 
 def handler(event, context):
-  return run_fargate_task(
+  response = run_fargate_task(
     "${cluster_name}", 
     "${task_arn}", 
     "${task_role_arn}", 
@@ -41,3 +42,4 @@ def handler(event, context):
     ${memory}, 
     ${cpu}
   )
+  return {"taskArn": response["tasks"][0]["taskArn"]}
