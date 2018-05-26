@@ -59,8 +59,8 @@ fi
 echo "delete local file test.txt after uploading"
 rm -f test.txt
 
-sleep_time=240
 # the second to sleep neeeds to be greater than buffer_interval in firehose
+sleep_time=240
 echo "waiting lambda and firehose work to be completed in $sleep_time seconds...... "
 sleep $sleep_time
 
