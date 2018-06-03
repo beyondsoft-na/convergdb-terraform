@@ -16,6 +16,7 @@
 
 provider "aws" {
   region = "${var.region}"
+  alias = "myregion"
 }
 
 resource "aws_kinesis_firehose_delivery_stream" "convergdb_firehose" {
@@ -30,6 +31,8 @@ resource "aws_kinesis_firehose_delivery_stream" "convergdb_firehose" {
     buffer_interval = 60
     compression_format = "GZIP"
   }
+  
+  provider = "aws.myregion"
 }
 
 resource "aws_iam_role" "firehose_role" {
@@ -50,6 +53,8 @@ resource "aws_iam_role" "firehose_role" {
   ]
 }
 EOF
+  
+  provider = "aws.myregion"
 }
 
 resource "aws_iam_role_policy" "firehose_policy" {
@@ -78,6 +83,8 @@ resource "aws_iam_role_policy" "firehose_policy" {
   ]
 }
 EOF
+  
+  provider = "aws.myregion"
 }
 
 resource "aws_lambda_permission" "s3_trigger" {
@@ -86,6 +93,7 @@ resource "aws_lambda_permission" "s3_trigger" {
   function_name = "${aws_lambda_function.convergdb_firehose_lambda.function_name}"
   principal = "s3.amazonaws.com"
   source_arn = "arn:aws:s3:::${var.source_bucket}"
+  provider = "aws.myregion"
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
@@ -95,6 +103,8 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
     lambda_function_arn = "${aws_lambda_function.convergdb_firehose_lambda.arn}"
     events              = ["s3:ObjectCreated:*"]
   }
+  
+  provider = "aws.myregion"
 }
 
 data "archive_file" "lambda_zip" {
@@ -117,6 +127,8 @@ resource "aws_lambda_function" "convergdb_firehose_lambda" {
       FIREHOSE_STREAM_NAME = "${var.firehose_stream_name}"
     }
   }
+  
+  provider = "aws.myregion"
 }
 
 resource "aws_iam_role" "convergdb_firehose_lambda_role" {
@@ -137,6 +149,8 @@ resource "aws_iam_role" "convergdb_firehose_lambda_role" {
   ]
 }
 EOF
+
+  provider = "aws.myregion"
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {
@@ -160,4 +174,6 @@ resource "aws_iam_role_policy" "lambda_policy" {
   ]
 }
 EOF
+  
+  provider = "aws.myregion"
 }
