@@ -30,3 +30,4 @@ variable "admin_bucket" {}
 variable "data_bucket" {}
 variable "cloudwatch_namespace" {}
 variable "sns_topic" {}
+variable "convergdb_lock_table"

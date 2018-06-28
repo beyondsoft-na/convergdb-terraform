@@ -46,6 +46,8 @@ Resources:
         "--extra-py-files": "s3://${var.script_bucket}/${var.pyspark_library_key}"
         "--convergdb_deployment_id": ${var.deployment_id}
         "--conf": "spark.yarn.executor.memoryOverhead=1024"
+        "--convergdb_lock_table": "${var.etl_lock_table}"
+        "--convergdb_job_name": "${var.job_name}"
       Command:
         Name: glueetl
         ScriptLocation: "s3://${var.script_bucket}/${var.script_key}"

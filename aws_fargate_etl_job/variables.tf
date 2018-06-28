@@ -18,6 +18,7 @@ variable "region" {}
 variable "deployment_id" { } 
 variable "etl_job_name" {} 
 variable "etl_job_schedule" {} 
+variable "etl_lock_table" {}
 
 variable "local_script" {}
 variable "local_pyspark_library" {}

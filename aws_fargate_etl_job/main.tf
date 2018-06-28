@@ -147,6 +147,14 @@ resource "aws_ecs_task_definition" "convergdb_ecs_task" {
       {
         "name": "CONVERGDB_SCRIPT",
         "value": "s3://${var.script_bucket}/${var.script_key}"
+      },
+      {
+        "name": "LOCK_TABLE",
+        "value": "${var.etl_lock_table}"
+      },
+      {
+        "name": "LOCK_ID",
+        "value": "${var.etl_job_name}"
       }
     ],
     "logConfiguration": {
