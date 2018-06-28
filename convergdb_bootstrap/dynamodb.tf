@@ -26,3 +26,16 @@ resource "aws_dynamodb_table" "lock" {
     type = "S"
   }
 }
+
+# dynamodb table for ETL locking
+resource "aws_dynamodb_table" "etl_lock" {
+  name           = "${var.etl_lock_table}"
+  read_capacity  = 5
+  write_capacity = 5
+  hash_key       = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
