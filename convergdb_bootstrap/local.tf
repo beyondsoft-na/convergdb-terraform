@@ -52,6 +52,10 @@ variable "data_bucket" {
   default = "${var.data_bucket}"
 }
 
+variable "etl_lock_table" {
+  default = "${var.etl_lock_table}"
+}
+
 variable "fargate_cluster" {
   default = "${aws_ecs_cluster.convergdb_ecs_cluster.id}"
 }
