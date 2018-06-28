@@ -166,6 +166,7 @@ resource "aws_cloudwatch_event_rule" "convergdb_etl" {
   name        = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   description = "convergdb etl job ${var.etl_job_name}"
   schedule_expression = "${var.etl_job_schedule}"
+  is_enabled = false
 }
 
 resource "aws_cloudwatch_event_target" "ecs_task" {

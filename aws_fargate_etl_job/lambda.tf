@@ -41,8 +41,8 @@ EOF
 }
 
 resource "aws_iam_role_policy" "run_task" {
-  name = "convergdb-${var.deployment_id}-${var.etl_job_name}-lambda-run-task"
-  role = "${aws_iam_role.iam_for_lambda.name}"
+  name   = "convergdb-${var.deployment_id}-${var.etl_job_name}-lambda-run-task"
+  role   = "${aws_iam_role.iam_for_lambda.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -67,10 +67,11 @@ EOF
 }
 
 resource "aws_lambda_function" "test_lambda" {
-  filename         = "${data.archive_file.lambda_package.output_path}"
-  function_name    = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
-  role             = "${aws_iam_role.iam_for_lambda.arn}"
-  source_code_hash = "${data.archive_file.lambda_package.output_base64sha256}"
-  handler          = "convergdb-trigger.handler"
-  runtime          = "python2.7"
+  filename                       = "${data.archive_file.lambda_package.output_path}"
+  function_name                  = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
+  role                           = "${aws_iam_role.iam_for_lambda.arn}"
+  source_code_hash               = "${data.archive_file.lambda_package.output_base64sha256}"
+  handler                        = "convergdb-trigger.handler"
+  runtime                        = "python2.7"
+  reserved_concurrent_executions = 1
 }
