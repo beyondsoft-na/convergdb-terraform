@@ -42,3 +42,8 @@ resource "aws_route" "convergdb_route" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.convergdb_gw.id}"
 }
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = "${aws_vpc.convergdb_vpc.id}"
+  service_name = "com.amazonaws.${var.region}.s3"
+}
