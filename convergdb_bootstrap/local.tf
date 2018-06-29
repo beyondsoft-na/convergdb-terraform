@@ -65,7 +65,7 @@ variable "fargate_vpc" {
 }
 
 variable "fargate_subnet" {
-  default = "${aws_subnet.convergdb_public_subnet.id}"
+  default = "${aws_subnet.convergdb_private_subnet.id}"
 }
 
 variable "ecs_log_group" {
