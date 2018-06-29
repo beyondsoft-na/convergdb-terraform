@@ -117,6 +117,13 @@ resource "aws_iam_role_policy" "s3_access" {
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
     }
   ]
 }
