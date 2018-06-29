@@ -47,7 +47,7 @@ resource "aws_internet_gateway" "convergdb_gw" {
 
 resource "aws_nat_gateway" "convergdb_nat_gw" {
   allocation_id = "${aws_eip.convergdb_eip.id}"
-  subnet_id     = "${aws_subnet.public.id}"
+  subnet_id     = "${aws_subnet.convergdb_public_subnet.id}"
   depends_on = [
     "aws_internet_gateway.convergdb_gw",
   ]
