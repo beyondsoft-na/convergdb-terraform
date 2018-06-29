@@ -26,7 +26,7 @@ resource "aws_subnet" "convergdb_public_subnet" {
   vpc_id = "${aws_vpc.convergdb_vpc.id}"  ##
   cidr_block = "${var.public_subnet_cidr}"
   tags {
-    Name = "convergdb-${var.deployment_id}"
+    Name = "convergdb-${var.deployment_id} Public Subnet"
   }
 }
 
@@ -34,7 +34,7 @@ resource "aws_subnet" "convergdb_private_subnet" {
   vpc_id = "${aws_vpc.convergdb_vpc.id}"  ##
   cidr_block = "${var.private_subnet_cidr}"
   tags {
-    Name = "convergdb-${var.deployment_id}"
+    Name = "convergdb-${var.deployment_id} Private Subnet"
   }
 }
 
@@ -74,6 +74,19 @@ resource "aws_eip" "convergdb_eip" {
   ]
 }
 
+resource "aws_route_table" "convergdb_public_subnet" {
+  vpc_id = "${aws_vpc.convergdb_vpc.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.convergdb_gw.id}"
+  }
+
+  tags {
+    Name = "${var.deployment_id} Public Subnet"
+  }
+}
+
 resource "aws_route_table" "convergdb_private_subnet" {
   vpc_id = "${aws_vpc.convergdb_vpc.id}"
 
@@ -83,11 +96,11 @@ resource "aws_route_table" "convergdb_private_subnet" {
   }
 
   tags {
-    Name = "convergdb-${var.deployment_id}"
+    Name = "convergdb-${var.deployment_id} Private Subnet"
   }
 }
 
-resource "aws_route_table_association" "private_subnet_a" {
+resource "aws_route_table_association" "convergdb_private_subnet" {
   subnet_id      = "${aws_subnet.convergdb_private_subnet.id}"
   route_table_id = "${aws_route_table.convergdb_private_subnet.id}"
 }
