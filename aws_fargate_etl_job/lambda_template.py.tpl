@@ -25,7 +25,7 @@ def run_fargate_task(cluster_name, task_arn, task_role_arn, subnet, memory, cpu)
             'subnets': [
                 subnet
             ],
-            'assignPublicIp': 'ENABLED'
+            'assignPublicIp': 'DISABLED'
         }
     }
   )
