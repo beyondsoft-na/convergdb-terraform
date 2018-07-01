@@ -32,7 +32,6 @@ resource "aws_s3_bucket_object" "convergdb_library" {
 }
 
 data "template_file" "script_object_source" {
-  provider = "aws.myregion"
   template = "${file("${var.local_script}")}"
 
   vars {
@@ -65,7 +64,6 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 data "aws_iam_policy_document" "ecs_assume_role_policy" {
-  provider = "aws.myregion"
   statement {
     actions = ["sts:AssumeRole"]
     principals {
