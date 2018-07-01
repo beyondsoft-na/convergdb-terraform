@@ -40,6 +40,7 @@ data "template_file" "stack" {
 
 # stack file is pushed to S3 because it may be too large for inline use
 resource "aws_s3_bucket_object" "stack" {
+  provider = "aws.myregion"
   bucket = "${var.admin_bucket}"
   key = "${var.s3_stack_key}"
   content = "${data.template_file.stack.rendered}"
