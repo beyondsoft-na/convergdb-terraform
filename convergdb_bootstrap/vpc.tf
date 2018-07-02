@@ -125,6 +125,15 @@ resource "aws_network_acl" "convergdb_private_subnet_acl" {
     to_port    = 0
   }
 
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
   tags {
     Name = "convergdb-${var.deployment_id}"
   }
