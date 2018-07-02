@@ -90,7 +90,7 @@ resource "aws_route_table" "convergdb_public_subnet" {
   }
 
   tags {
-    Name = "${var.deployment_id} Public Subnet"
+    Name = "convergdb-${var.deployment_id} Public Subnet"
   }
 }
 
@@ -110,4 +110,30 @@ resource "aws_route_table" "convergdb_private_subnet" {
 resource "aws_route_table_association" "convergdb_private_subnet" {
   subnet_id      = "${aws_subnet.convergdb_private_subnet.id}"
   route_table_id = "${aws_route_table.convergdb_private_subnet.id}"
+}
+
+resource "aws_network_acl" "convergdb_private_subnet_acl" {
+  vpc_id = "${aws_vpc.convergdb_vpc.id}"
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "deny"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags {
+    Name = "convergdb-${var.deployment_id}"
+  }
 }
