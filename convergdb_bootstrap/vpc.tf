@@ -114,20 +114,12 @@ resource "aws_route_table_association" "convergdb_private_subnet" {
 
 resource "aws_network_acl" "convergdb_private_subnet_acl" {
   vpc_id = "${aws_vpc.convergdb_vpc.id}"
+  subnet_ids = [ "${awS_subnet.convergdb_private_subnet.id}" ]
 
   egress {
     protocol   = -1
     rule_no    = 100
     action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    to_port    = 0
-  }
-
-  ingress {
-    protocol   = -1
-    rule_no    = 100
-    action     = "deny"
     cidr_block = "0.0.0.0/0"
     from_port  = 0
     to_port    = 0
