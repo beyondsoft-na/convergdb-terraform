@@ -114,7 +114,7 @@ resource "aws_route_table_association" "convergdb_private_subnet" {
 
 resource "aws_network_acl" "convergdb_private_subnet_acl" {
   vpc_id = "${aws_vpc.convergdb_vpc.id}"
-  subnet_ids = [ "${awS_subnet.convergdb_private_subnet.id}" ]
+  subnet_ids = [ "${aws_subnet.convergdb_private_subnet.id}" ]
 
   egress {
     protocol   = -1
