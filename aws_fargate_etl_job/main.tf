@@ -83,10 +83,38 @@ resource "aws_iam_role_policy" "s3_access" {
   "Statement": [
     {
       "Action": [
-        "s3:*"
+        "s3:CreateBucket",
+        "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:GetObjectAcl",
+        "s3:GetObjectTagging",
+        "s3:GetObjectVersion",
+        "s3:GetObjectVersionAcl",
+        "s3:GetObjectVersionTagging",
+        "s3:ListBucket",
+        "s3:ListBucketVersions",
+        "s3:ListBucketMultipartUploads"
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
+        "s3:DeleteObjectTagging",
+        "s3:DeleteObjectVersion",
+        "s3:DeleteObjectVersionTagging",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}/*",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}/*"
+      ]
     },
     {
       "Action": [
@@ -100,7 +128,7 @@ resource "aws_iam_role_policy" "s3_access" {
         "sns:Publish"
       ],
       "Effect": "Allow",
-      "Resource": "arn:aws:sns:::convergdb*"
+      "Resource": "arn:aws:sns:::convergdb-${var.deployment_id}"
     },
     {
       "Action": [
