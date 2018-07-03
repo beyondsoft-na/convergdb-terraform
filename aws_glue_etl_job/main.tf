@@ -108,6 +108,7 @@ resource "aws_iam_role_policy_attachment" "attach_glue_service" {
 }
 
 resource "aws_iam_role_policy" "s3_access" {
+  provider = "aws.myregion"
   name = "convergdb-${var.job_name}-s3-access-policy-${random_id.module_id.dec}"
   role = "${aws_iam_role.glue_service_role.name}"
 
