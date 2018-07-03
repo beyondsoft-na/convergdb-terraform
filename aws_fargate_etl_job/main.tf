@@ -88,13 +88,7 @@ resource "aws_iam_role_policy" "s3_access" {
         "s3:CreateBucket",
         "s3:GetBucketLocation",
         "s3:GetObject",
-        "s3:GetObjectAcl",
-        "s3:GetObjectTagging",
-        "s3:GetObjectVersion",
-        "s3:GetObjectVersionAcl",
-        "s3:GetObjectVersionTagging",
         "s3:ListBucket",
-        "s3:ListBucketVersions",
         "s3:ListBucketMultipartUploads"
       ],
       "Effect": "Allow",
@@ -104,9 +98,6 @@ resource "aws_iam_role_policy" "s3_access" {
       "Action": [
         "s3:AbortMultipartUpload",
         "s3:DeleteObject",
-        "s3:DeleteObjectTagging",
-        "s3:DeleteObjectVersion",
-        "s3:DeleteObjectVersionTagging",
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
       ],
