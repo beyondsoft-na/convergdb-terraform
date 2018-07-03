@@ -120,7 +120,10 @@ resource "aws_iam_role_policy" "s3_access" {
     },
     {
       "Action": [
-        "athena:*"
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:GetTable"
       ],
       "Effect": "Allow",
       "Resource": "*"
