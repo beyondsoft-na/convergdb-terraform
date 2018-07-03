@@ -122,8 +122,14 @@ resource "aws_iam_role_policy" "s3_access" {
       "Action": [
         "athena:StartQueryExecution",
         "athena:GetQueryExecution",
-        "athena:GetQueryResults",
-        "athena:GetTable"
+        "athena:GetQueryResults"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "glue:GetTable"
       ],
       "Effect": "Allow",
       "Resource": "*"
@@ -138,20 +144,6 @@ resource "aws_iam_role_policy" "s3_access" {
     {
       "Action": [
         "cloudwatch:PutMetricData"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "glue:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "sts:*"
       ],
       "Effect": "Allow",
       "Resource": "*"
