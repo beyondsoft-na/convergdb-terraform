@@ -19,6 +19,8 @@ provider "aws" {
   alias  = "myregion"
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket_object" "convergdb_library" {
   provider = "aws.myregion"
   bucket   = "${var.script_bucket}"
@@ -153,10 +155,18 @@ resource "aws_iam_role_policy" "s3_access" {
     },
     {
       "Action": [
-        "dynamodb:*"
+        "dynamodb:DeleteItem",
+        "dynamodb:PutItem"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${var.etl_lock_table}",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "dynamodb:LeadingKeys": [
+            "${var.etl_job_name}"
+          ]
+        }
+      }
     }
   ]
 }
