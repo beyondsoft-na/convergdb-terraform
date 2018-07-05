@@ -19,6 +19,8 @@ provider "aws" {
   region = "${var.region}"
 }
 
+data "aws_caller_identity" "current" {}
+
 # unique identifier for this module
 resource "random_id" "module_id" {
   byte_length = 8
@@ -117,14 +119,35 @@ resource "aws_iam_role_policy" "s3_access" {
   "Statement": [
     {
       "Action": [
-        "s3:*"
+        "s3:CreateBucket",
+        "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads"
       ],
       "Effect": "Allow",
       "Resource": "*"
     },
     {
       "Action": [
-        "athena:*"
+        "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}/*",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}/*"
+      ]
+    },
+    {
+      "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults"
       ],
       "Effect": "Allow",
       "Resource": "*"
@@ -134,7 +157,7 @@ resource "aws_iam_role_policy" "s3_access" {
         "sns:Publish"
       ],
       "Effect": "Allow",
-      "Resource": "arn:aws:sns:::convergdb*"
+      "Resource": "arn:aws:sns:::convergdb-${var.deployment_id}"
     },
     {
       "Action": [
@@ -145,10 +168,18 @@ resource "aws_iam_role_policy" "s3_access" {
     },
     {
       "Action": [
-        "dynamodb:*"
+        "dynamodb:DeleteItem",
+        "dynamodb:PutItem"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${var.etl_lock_table}",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "dynamodb:LeadingKeys": [
+            "${var.job_name}"
+          ]
+        }
+      }
     }
   ]
 }
