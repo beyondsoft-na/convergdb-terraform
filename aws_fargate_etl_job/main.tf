@@ -120,7 +120,8 @@ resource "aws_iam_role_policy" "s3_access" {
     },
     {
       "Action": [
-        "glue:GetTable"
+        "glue:GetTable",
+        "glue:GetDatabase"
       ],
       "Effect": "Allow",
       "Resource": "*"
