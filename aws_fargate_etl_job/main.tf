@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket_object" "convergdb_library" {
   bucket   = "${var.script_bucket}"
   key      = "${var.pyspark_library_key}"
@@ -74,28 +76,35 @@ resource "aws_iam_role_policy" "s3_access" {
   "Statement": [
     {
       "Action": [
-        "s3:*"
+        "s3:CreateBucket",
+        "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads"
       ],
       "Effect": "Allow",
       "Resource": "*"
     },
     {
       "Action": [
-        "athena:*"
+        "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": [
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-admin-${var.deployment_id}/${var.deployment_id}/*",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}",
+          "arn:aws:s3:::convergdb-data-${var.deployment_id}/${var.deployment_id}/*"
+      ]
     },
     {
       "Action": [
-        "sns:Publish"
-      ],
-      "Effect": "Allow",
-      "Resource": "arn:aws:sns:::convergdb*"
-    },
-    {
-      "Action": [
-        "cloudwatch:PutMetricData"
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults"
       ],
       "Effect": "Allow",
       "Resource": "*"
@@ -109,17 +118,32 @@ resource "aws_iam_role_policy" "s3_access" {
     },
     {
       "Action": [
-        "sts:*"
+        "sns:Publish"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:sns:::convergdb-${var.deployment_id}"
+    },
+    {
+      "Action": [
+        "cloudwatch:PutMetricData"
       ],
       "Effect": "Allow",
       "Resource": "*"
     },
     {
       "Action": [
-        "dynamodb:*"
+        "dynamodb:DeleteItem",
+        "dynamodb:PutItem"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${var.etl_lock_table}",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "dynamodb:LeadingKeys": [
+            "${var.etl_job_name}"
+          ]
+        }
+      }
     }
   ]
 }
