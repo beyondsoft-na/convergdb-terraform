@@ -19,11 +19,6 @@ resource "random_id" "module_id" {
   byte_length = 8
 }
 
-provider "aws" {
-  alias  = "myregion"
-  region = "${var.region}"
-}
-
 # template file is used because there may be variables inside
 # the stack definition which need to be resolved.
 data "template_file" "stack" {
@@ -40,7 +35,6 @@ data "template_file" "stack" {
 
 # stack file is pushed to S3 because it may be too large for inline use
 resource "aws_s3_bucket_object" "stack" {
-  provider = "aws.myregion"
   bucket = "${var.admin_bucket}"
   key = "${var.s3_stack_key}"
   content = "${data.template_file.stack.rendered}"
@@ -50,7 +44,6 @@ resource "aws_s3_bucket_object" "stack" {
 resource "aws_cloudformation_stack" "athena_relation_stack" {
   name          = "convergdb-${var.stack_name}-${var.deployment_id}"
   template_url = "https://s3.amazonaws.com/${var.admin_bucket}/${var.s3_stack_key}"
-  provider      = "aws.myregion"
 
   tags {
     "convergdb:deployment" = "${var.deployment_id}"

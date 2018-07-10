@@ -14,11 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-provider "aws" {
-  alias  = "myregion"
-  region = "${var.region}"
-}
-
 # unique identifier for this module
 resource "random_id" "module_id" {
   byte_length = 8
@@ -71,8 +66,6 @@ STACK
     "aws_iam_role_policy.s3_access",
   ]
 
-  provider = "aws.myregion"
-
   tags {
     "convergdb:deployment" = "${var.deployment_id}"
     "convergdb:module"     = "${random_id.module_id.dec}"
@@ -97,14 +90,11 @@ resource "aws_iam_role" "glue_service_role" {
   ]
 }
 EOF
-
-  provider = "aws.myregion"
 }
 
 resource "aws_iam_role_policy_attachment" "attach_glue_service" {
   role       = "${aws_iam_role.glue_service_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
-  provider   = "aws.myregion"
 }
 
 resource "aws_iam_role_policy" "s3_access" {
@@ -153,8 +143,6 @@ resource "aws_iam_role_policy" "s3_access" {
   ]
 }
 EOF
-
-  provider = "aws.myregion"
 }
 
 data "template_file" "script_object_source" {
@@ -175,7 +163,6 @@ resource "aws_s3_bucket_object" "script_object" {
   key      = "${var.script_key}"
   content  = "${data.template_file.script_object_source.rendered}"
   etag     = "${md5("${data.template_file.script_object_source.rendered}")}"
-  provider = "aws.myregion"
 
   tags {
     "convergdb:deployment" = "${var.deployment_id}"
@@ -188,7 +175,6 @@ resource "aws_s3_bucket_object" "library_object" {
   key      = "${var.pyspark_library_key}"
   source   = "${var.local_pyspark_library}"
   etag     = "${md5(file("${var.local_pyspark_library}"))}"
-  provider = "aws.myregion"
 
   tags {
     "convergdb:deployment" = "${var.deployment_id}"

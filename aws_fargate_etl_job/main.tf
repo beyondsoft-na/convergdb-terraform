@@ -14,13 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-provider "aws" {
-  region = "${var.region}"
-  alias  = "myregion"
-}
-
 resource "aws_s3_bucket_object" "convergdb_library" {
-  provider = "aws.myregion"
   bucket   = "${var.script_bucket}"
   key      = "${var.pyspark_library_key}"
   source   = "${var.local_pyspark_library}"
@@ -45,7 +39,6 @@ data "template_file" "script_object_source" {
 }
 
 resource "aws_s3_bucket_object" "script_object" {
-  provider = "aws.myregion"
   bucket   = "${var.script_bucket}"
   key      = "${var.script_key}"
   content  = "${data.template_file.script_object_source.rendered}"
@@ -57,7 +50,6 @@ resource "aws_s3_bucket_object" "script_object" {
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  provider = "aws.myregion"
   name = "convergdb-${var.deployment_id}-${var.etl_job_name}-task-role"
   path = "/"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy.json}"
@@ -74,7 +66,6 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
 }
 
 resource "aws_iam_role_policy" "s3_access" {
-  provider = "aws.myregion"
   name = "convergdb-${var.deployment_id}-${var.etl_job_name}-access-policy"
   role = "${aws_iam_role.ecs_task_role.name}"
   policy = <<EOF
@@ -136,7 +127,6 @@ EOF
 }
 
 resource "aws_ecs_task_definition" "convergdb_ecs_task" {
-  provider = "aws.myregion"
   family = "convergdb-${var.deployment_id}-${var.etl_job_name}"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -184,7 +174,6 @@ DEFINITION
 }
 
 resource "aws_cloudwatch_event_rule" "convergdb_etl" {
-  provider = "aws.myregion"
   name        = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   description = "convergdb etl job ${var.etl_job_name}"
   schedule_expression = "${var.etl_job_schedule}"
@@ -192,7 +181,6 @@ resource "aws_cloudwatch_event_rule" "convergdb_etl" {
 }
 
 resource "aws_cloudwatch_event_target" "ecs_task" {
-  provider = "aws.myregion"
   rule      = "${aws_cloudwatch_event_rule.convergdb_etl.name}"
   target_id = "convergdb-${var.deployment_id}-${var.etl_job_name}-target"
   arn = "${var.ecs_cluster}"

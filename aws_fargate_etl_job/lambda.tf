@@ -23,7 +23,6 @@ data "archive_file" "lambda_package" {
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "convergdb-${var.deployment_id}-${var.etl_job_name}-fargate-trigger"
-  provider = "aws.myregion"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -44,7 +43,6 @@ EOF
 resource "aws_iam_role_policy" "run_task" {
   name   = "convergdb-${var.deployment_id}-${var.etl_job_name}-lambda-run-task"
   role   = "${aws_iam_role.iam_for_lambda.name}"
-  provider = "aws.myregion"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -69,7 +67,6 @@ EOF
 }
 
 resource "aws_lambda_function" "test_lambda" {
-  provider                       = "aws.myregion"
   filename                       = "${data.archive_file.lambda_package.output_path}"
   function_name                  = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   role                           = "${aws_iam_role.iam_for_lambda.arn}"
