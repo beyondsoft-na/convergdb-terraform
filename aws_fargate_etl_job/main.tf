@@ -191,7 +191,8 @@ resource "aws_ecs_task_definition" "convergdb_ecs_task" {
         "awslogs-region": "${var.region}",
         "awslogs-stream-prefix": "${var.etl_job_name}"
       }
-    }
+    },
+    "portMappings": []
   }
 ]
 DEFINITION
