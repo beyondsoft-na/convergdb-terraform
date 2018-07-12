@@ -74,7 +74,7 @@ variable "ecs_log_group" {
 }
 
 variable "ecs_execution_role" {
-  default = "${aws_iam_role.execution_task_role.id}"
+  default = "${aws_iam_role.execution_task_role.arn}"
 }
 
 EOF
