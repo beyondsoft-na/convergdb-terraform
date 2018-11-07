@@ -33,6 +33,7 @@ variable "private_subnet_cidr" {
 variable "deployment_id" {}
 variable "admin_bucket" {}
 variable "data_bucket" {}
+variable "sse_encryption_algorithm" { default = "AES256" }
 variable "lock_table" {}
 variable "etl_lock_table" {}
 variable "backend_file_path" {}

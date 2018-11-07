@@ -22,6 +22,14 @@ resource "aws_s3_bucket" "admin" {
     enabled = true
   }
 
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm     = "${var.sse_encryption_algorithm}"
+      }
+    }
+  }
+  
   lifecycle_rule {
     id      = "athena_tmp_results_expiration"
     prefix  = "${var.deployment_id}/tmp/"
@@ -38,6 +46,14 @@ resource "aws_s3_bucket" "data" {
 
   versioning {
     enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm     = "${var.sse_encryption_algorithm}"
+      }
+    }
   }
 
   lifecycle_rule {
