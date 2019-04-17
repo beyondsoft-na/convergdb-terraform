@@ -82,7 +82,8 @@ resource "aws_iam_role_policy" "s3_access" {
         "s3:GetBucketLocation",
         "s3:GetObject",
         "s3:ListBucket",
-        "s3:ListBucketMultipartUploads"
+        "s3:ListBucketMultipartUploads",
+        "s3:GetEncryptionConfiguration"
       ],
       "Effect": "Allow",
       "Resource": "*"
