@@ -69,7 +69,9 @@ variable "stored_as_sub_directories" {} # (Optional) True if the table data is s
 # partition keys
 #
 
-variable "partition_keys" {}
+variable "partition_keys" {
+  type = "list"
+}
 
 #
 # parameters (table properties)
