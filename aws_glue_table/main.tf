@@ -43,8 +43,9 @@ resource "aws_glue_catalog_table" "table" {
 #      skewed_column_values              = "${var.skewed_column_values}"
 #    }
     stored_as_sub_directories = "${var.stored_as_sub_directories}"
-    partition_keys = "${var.partition_keys}"
   }
+  
+  partition_keys = "${var.partition_keys}"
   
   parameters {
     classification               = "${var.classification}"
