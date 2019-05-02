@@ -20,7 +20,7 @@ resource "aws_glue_catalog_table" "table" {
   table_type    = "${var.table_type}"
 
   storage_descriptor {
-    columns                   = "${var.columns["columns"]}"
+    columns                   = "${var.columns}"
     location                  = "${var.location}"
     input_format              = "${var.input_format}"
     output_format             = "${var.output_format}"
@@ -43,6 +43,7 @@ resource "aws_glue_catalog_table" "table" {
 #      skewed_column_values              = "${var.skewed_column_values}"
 #    }
     stored_as_sub_directories = "${var.stored_as_sub_directories}"
+    partition_keys = "${var.partition_keys}"
   }
   
   parameters {
