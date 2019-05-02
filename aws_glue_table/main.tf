@@ -20,7 +20,7 @@ resource "aws_glue_catalog_table" "table" {
   table_type    = "${var.table_type}"
 
   storage_descriptor {
-    columns                   = "${var.columns}"
+    columns                   = "${var.columns["columns"]}"
     location                  = "${var.location}"
     input_format              = "${var.input_format}"
     output_format             = "${var.output_format}"

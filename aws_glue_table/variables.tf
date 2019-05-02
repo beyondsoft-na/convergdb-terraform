@@ -27,7 +27,7 @@ variable "table_type" {
 #
 
 variable "columns" {
-  type = "list"
+  type = "map"
 }
 
 variable "location" {} # (Optional) The physical location of the table. By default this takes the form of the warehouse location, followed by the database location in the warehouse, followed by the table name.
