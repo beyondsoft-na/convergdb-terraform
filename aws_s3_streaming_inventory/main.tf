@@ -15,21 +15,21 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 resource "aws_kinesis_firehose_delivery_stream" "convergdb_firehose" {
-  name        = "${var.firehose_stream_name}"
+  name        = var.firehose_stream_name
   destination = "extended_s3"
 
   extended_s3_configuration {
-    role_arn   = "${aws_iam_role.firehose_role.arn}"
-    bucket_arn = "arn:aws:s3:::${var.destination_bucket}"
-    prefix     = "${var.destination_prefix}"
-    buffer_size = 100
-    buffer_interval = 60
+    role_arn           = aws_iam_role.firehose_role.arn
+    bucket_arn         = "arn:aws:s3:::${var.destination_bucket}"
+    prefix             = var.destination_prefix
+    buffer_size        = 100
+    buffer_interval    = 60
     compression_format = "GZIP"
   }
 }
 
 resource "aws_iam_role" "firehose_role" {
-  name = "${var.firehose_stream_name}"
+  name = var.firehose_stream_name
 
   assume_role_policy = <<EOF
 {
@@ -46,10 +46,11 @@ resource "aws_iam_role" "firehose_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "firehose_policy" {
-  role   = "${aws_iam_role.firehose_role.name}"
+  role = aws_iam_role.firehose_role.name
 
   policy = <<EOF
 {
@@ -74,21 +75,22 @@ resource "aws_iam_role_policy" "firehose_policy" {
   ]
 }
 EOF
+
 }
 
 resource "aws_lambda_permission" "s3_trigger" {
-  statement_id = "AllowExecutionFromS3Changes"
-  action = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.convergdb_firehose_lambda.function_name}"
-  principal = "s3.amazonaws.com"
-  source_arn = "arn:aws:s3:::${var.source_bucket}"
+  statement_id  = "AllowExecutionFromS3Changes"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.convergdb_firehose_lambda.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = "arn:aws:s3:::${var.source_bucket}"
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = "${var.source_bucket}"
+  bucket = var.source_bucket
 
   lambda_function {
-    lambda_function_arn = "${aws_lambda_function.convergdb_firehose_lambda.arn}"
+    lambda_function_arn = aws_lambda_function.convergdb_firehose_lambda.arn
     events              = ["s3:ObjectCreated:*"]
   }
 }
@@ -100,17 +102,17 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "convergdb_firehose_lambda" {
-  filename         = "${data.archive_file.lambda_zip.output_path}"
-  function_name    = "${var.lambda_name}"
+  filename         = data.archive_file.lambda_zip.output_path
+  function_name    = var.lambda_name
   description      = "streaming inventory for bucket ${var.source_bucket}"
   handler          = "s3_lambda_firehose.lambda_handler"
-  source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   runtime          = "python3.6"
   timeout          = "300"
-  role             = "${aws_iam_role.convergdb_firehose_lambda_role.arn}"
+  role             = aws_iam_role.convergdb_firehose_lambda_role.arn
   environment {
     variables = {
-      FIREHOSE_STREAM_NAME = "${var.firehose_stream_name}"
+      FIREHOSE_STREAM_NAME = var.firehose_stream_name
     }
   }
 }
@@ -133,10 +135,11 @@ resource "aws_iam_role" "convergdb_firehose_lambda_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {
-  role   = "${aws_iam_role.convergdb_firehose_lambda_role.name}"
+  role = aws_iam_role.convergdb_firehose_lambda_role.name
 
   policy = <<EOF
 {
@@ -156,4 +159,6 @@ resource "aws_iam_role_policy" "lambda_policy" {
   ]
 }
 EOF
+
 }
+

@@ -16,105 +16,101 @@
 
 # networking objects for vpc
 resource "aws_vpc" "convergdb_vpc" {
-  cidr_block = "${var.vpc_cidr}" ##
+  cidr_block = var.vpc_cidr ##
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id}" ##
   }
 }
 
 resource "aws_subnet" "convergdb_public_subnet" {
-  vpc_id     = "${aws_vpc.convergdb_vpc.id}" ##
-  cidr_block = "${var.public_subnet_cidr}"
+  vpc_id     = aws_vpc.convergdb_vpc.id ##
+  cidr_block = var.public_subnet_cidr
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id} Public Subnet"
   }
 }
 
 resource "aws_subnet" "convergdb_private_subnet" {
-  vpc_id     = "${aws_vpc.convergdb_vpc.id}" ##
-  cidr_block = "${var.private_subnet_cidr}"
+  vpc_id     = aws_vpc.convergdb_vpc.id ##
+  cidr_block = var.private_subnet_cidr
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id} Private Subnet"
   }
 }
 
 resource "aws_internet_gateway" "convergdb_gw" {
-  vpc_id = "${aws_vpc.convergdb_vpc.id}"
+  vpc_id = aws_vpc.convergdb_vpc.id
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id}"
   }
 }
 
 resource "aws_nat_gateway" "convergdb_nat_gw" {
-  allocation_id = "${aws_eip.convergdb_eip.id}"
-  subnet_id     = "${aws_subnet.convergdb_public_subnet.id}"
+  allocation_id = aws_eip.convergdb_eip.id
+  subnet_id     = aws_subnet.convergdb_public_subnet.id
 
-  depends_on = [
-    "aws_internet_gateway.convergdb_gw",
-  ]
+  depends_on = [aws_internet_gateway.convergdb_gw]
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id}"
   }
 }
 
 resource "aws_route" "convergdb_route" {
-  route_table_id         = "${aws_vpc.convergdb_vpc.main_route_table_id}"
+  route_table_id         = aws_vpc.convergdb_vpc.main_route_table_id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.convergdb_gw.id}"
+  gateway_id             = aws_internet_gateway.convergdb_gw.id
 }
 
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = "${aws_vpc.convergdb_vpc.id}"
+  vpc_id       = aws_vpc.convergdb_vpc.id
   service_name = "com.amazonaws.${var.region}.s3"
 }
 
 resource "aws_eip" "convergdb_eip" {
   vpc = true
 
-  depends_on = [
-    "aws_internet_gateway.convergdb_gw",
-  ]
+  depends_on = [aws_internet_gateway.convergdb_gw]
 }
 
 resource "aws_route_table" "convergdb_public_subnet" {
-  vpc_id = "${aws_vpc.convergdb_vpc.id}"
+  vpc_id = aws_vpc.convergdb_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.convergdb_gw.id}"
+    gateway_id = aws_internet_gateway.convergdb_gw.id
   }
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id} Public Subnet"
   }
 }
 
 resource "aws_route_table" "convergdb_private_subnet" {
-  vpc_id = "${aws_vpc.convergdb_vpc.id}"
+  vpc_id = aws_vpc.convergdb_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = "${aws_nat_gateway.convergdb_nat_gw.id}"
+    nat_gateway_id = aws_nat_gateway.convergdb_nat_gw.id
   }
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id} Private Subnet"
   }
 }
 
 resource "aws_route_table_association" "convergdb_private_subnet" {
-  subnet_id      = "${aws_subnet.convergdb_private_subnet.id}"
-  route_table_id = "${aws_route_table.convergdb_private_subnet.id}"
+  subnet_id      = aws_subnet.convergdb_private_subnet.id
+  route_table_id = aws_route_table.convergdb_private_subnet.id
 }
 
 resource "aws_network_acl" "convergdb_private_subnet_acl" {
-  vpc_id = "${aws_vpc.convergdb_vpc.id}"
-  subnet_ids = [ "${aws_subnet.convergdb_private_subnet.id}" ]
+  vpc_id     = aws_vpc.convergdb_vpc.id
+  subnet_ids = [aws_subnet.convergdb_private_subnet.id]
 
   egress {
     protocol   = -1
@@ -134,7 +130,8 @@ resource "aws_network_acl" "convergdb_private_subnet_acl" {
     to_port    = 65535
   }
 
-  tags {
+  tags = {
     Name = "convergdb-${var.deployment_id}"
   }
 }
+

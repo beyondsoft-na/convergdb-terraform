@@ -16,7 +16,8 @@
 
 # objects to be passed to the primary terraform deployment
 
-variable "region" {}
+variable "region" {
+}
 
 variable "vpc_cidr" {
   default = "10.0.0.0/16"
@@ -30,11 +31,28 @@ variable "private_subnet_cidr" {
   default = "10.0.1.0/24"
 }
 
-variable "deployment_id" {}
-variable "admin_bucket" {}
-variable "data_bucket" {}
-variable "sse_encryption_algorithm" { default = "AES256" }
-variable "lock_table" {}
-variable "etl_lock_table" {}
-variable "backend_file_path" {}
-variable "variables_file_path" {}
+variable "deployment_id" {
+}
+
+variable "admin_bucket" {
+}
+
+variable "data_bucket" {
+}
+
+variable "sse_encryption_algorithm" {
+  default = "AES256"
+}
+
+variable "lock_table" {
+}
+
+variable "etl_lock_table" {
+}
+
+variable "backend_file_path" {
+}
+
+variable "variables_file_path" {
+}
+

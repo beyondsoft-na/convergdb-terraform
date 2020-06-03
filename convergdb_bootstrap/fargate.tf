@@ -41,11 +41,12 @@ resource "aws_iam_role" "execution_task_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "execution_task_role" {
   name = "convergdb_execution_task_role"
-  role = "${aws_iam_role.execution_task_role.id}"
+  role = aws_iam_role.execution_task_role.id
 
   policy = <<EOF
 {
@@ -67,4 +68,6 @@ resource "aws_iam_role_policy" "execution_task_role" {
   ]
 }
 EOF
+
 }
+

@@ -14,47 +14,47 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-data "aws_caller_identity" "current" {}
-
-resource "aws_s3_bucket_object" "convergdb_library" {
-  bucket = "${var.script_bucket}"
-  key    = "${var.pyspark_library_key}"
-  source = "${var.local_pyspark_library}"
-  etag   = "${md5(file("${var.local_pyspark_library}"))}"
-
-  tags {
-    "convergdb:deployment" = "${var.deployment_id}"
-  }
+locals {
+  script_object_source = templatefile(("${path.module}/${var.local_script}"), {
+      admin_bucket         = var.admin_bucket
+      data_bucket          = var.data_bucket
+      deployment_id        = var.deployment_id
+      region               = var.region
+      sns_topic            = var.sns_topic
+      cloudwatch_namespace = var.cloudwatch_namespace
+    }
+  )
 }
 
-data "template_file" "script_object_source" {
-  template = "${file("${var.local_script}")}"
+data "aws_caller_identity" "current" {
+}
 
-  vars {
-    admin_bucket         = "${var.admin_bucket}"
-    data_bucket          = "${var.data_bucket}"
-    deployment_id        = "${var.deployment_id}"
-    region               = "${var.region}"
-    sns_topic            = "${var.sns_topic}"
-    cloudwatch_namespace = "${var.cloudwatch_namespace}"
+resource "aws_s3_bucket_object" "convergdb_library" {
+  bucket = var.script_bucket
+  key    = var.pyspark_library_key
+  source = var.local_pyspark_library
+  etag   = filemd5(var.local_pyspark_library)
+
+  tags = {
+    "convergdb:deployment" = var.deployment_id
   }
 }
 
 resource "aws_s3_bucket_object" "script_object" {
-  bucket  = "${var.script_bucket}"
-  key     = "${var.script_key}"
-  content = "${data.template_file.script_object_source.rendered}"
-  etag    = "${md5("${data.template_file.script_object_source.rendered}")}"
+  bucket  = var.script_bucket
+  key     = var.script_key
+  content = local.script_object_source
+  etag    = md5(local.script_object_source)
 
-  tags {
-    "convergdb:deployment" = "${var.deployment_id}"
+  tags = {
+    "convergdb:deployment" = var.deployment_id
   }
 }
 
 resource "aws_iam_role" "ecs_task_role" {
   name               = "convergdb-${var.deployment_id}-${var.etl_job_name}-task-role"
   path               = "/"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
 }
 
 data "aws_iam_policy_document" "ecs_assume_role_policy" {
@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
 
 resource "aws_iam_role_policy" "s3_access" {
   name = "convergdb-${var.deployment_id}-${var.etl_job_name}-access-policy"
-  role = "${aws_iam_role.ecs_task_role.name}"
+  role = aws_iam_role.ecs_task_role.name
 
   policy = <<EOF
 {
@@ -151,16 +151,17 @@ resource "aws_iam_role_policy" "s3_access" {
   ]
 }
 EOF
+
 }
 
 resource "aws_ecs_task_definition" "convergdb_ecs_task" {
   family                   = "convergdb-${var.deployment_id}-${var.etl_job_name}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "${var.fargate_cpu}"
-  memory                   = "${var.fargate_memory}"
-  task_role_arn            = "${aws_iam_role.ecs_task_role.arn}"
-  execution_role_arn       = "${var.execution_task_role}"
+  cpu                      = var.fargate_cpu
+  memory                   = var.fargate_memory
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = var.execution_task_role
 
   container_definitions = <<DEFINITION
 [
@@ -200,6 +201,7 @@ resource "aws_ecs_task_definition" "convergdb_ecs_task" {
   }
 ]
 DEFINITION
+
 }
 
 resource "aws_iam_role" "ecs_events" {
@@ -223,7 +225,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "ecs_events_policy" {
-  role = "${aws_iam_role.ecs_events.name}"
+  role = aws_iam_role.ecs_events.name
 
   policy = <<EOF
 {
@@ -240,29 +242,31 @@ resource "aws_iam_role_policy" "ecs_events_policy" {
   ]
 }
 EOF
+
 }
 
 resource "aws_cloudwatch_event_rule" "convergdb_etl" {
   name                = "convergdb-${var.deployment_id}-${var.etl_job_name}-trigger"
   description         = "convergdb etl job ${var.etl_job_name}"
-  schedule_expression = "${var.etl_job_schedule}"
+  schedule_expression = var.etl_job_schedule
   is_enabled          = true
 }
 
 resource "aws_cloudwatch_event_target" "ecs_task" {
-  rule      = "${aws_cloudwatch_event_rule.convergdb_etl.name}"
+  rule      = aws_cloudwatch_event_rule.convergdb_etl.name
   target_id = "convergdb-${var.deployment_id}-${var.etl_job_name}-target"
-  arn       = "${var.ecs_cluster}"
-  role_arn  = "${aws_iam_role.ecs_events.arn}"
+  arn       = var.ecs_cluster
+  role_arn  = aws_iam_role.ecs_events.arn
 
   ecs_target {
-    task_definition_arn = "${aws_ecs_task_definition.convergdb_ecs_task.arn}"
+    task_definition_arn = aws_ecs_task_definition.convergdb_ecs_task.arn
     task_count          = 1
     launch_type         = "FARGATE"
     platform_version    = "LATEST"
 
     network_configuration {
-      subnets = ["${var.ecs_subnet}"]
+      subnets = [var.ecs_subnet]
     }
   }
 }
+

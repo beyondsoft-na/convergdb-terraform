@@ -15,7 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 provider "aws" {
-  region = "${var.region}"
+  region = var.region
 }
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
+

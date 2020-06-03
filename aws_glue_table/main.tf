@@ -15,47 +15,52 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 resource "aws_glue_catalog_table" "table" {
-  name          = "${var.table_name}"
-  database_name = "${var.database_name}"
-  table_type    = "${var.table_type}"
+  name          = var.table_name
+  database_name = var.database_name
+  table_type    = var.table_type
+  partition_keys {
+    name     = var.partition_keys[0]
+    type     = var.partition_keys[1]
+    comment  = var.partition_keys[2]
+  } 
 
   storage_descriptor {
-    columns                   = "${var.columns}"
-    location                  = "${var.location}"
-    input_format              = "${var.input_format}"
-    output_format             = "${var.output_format}"
-    compressed                = "${var.compressed}"
-    number_of_buckets         = "${var.number_of_buckets}"
-    
+    columns {
+      name     = var.columns[0]
+      type     = var.columns[1]
+      comment  = var.columns[2]
+    }
+    location          = var.location
+    input_format      = var.input_format
+    output_format     = var.output_format
+    compressed        = var.compressed
+    number_of_buckets = var.number_of_buckets
+
     ser_de_info {
-  		name                  = "${var.ser_de_info_name}"
-			serialization_library = "${var.ser_de_info_serialization_library}" 
-			parameters {
-				"serialization.format" = "1"
-			}
-		}
-		
-    bucket_columns            = "${var.bucket_columns}"
-    sort_columns              = "${var.sort_columns}"
-#    skewed_info {
-#      skewed_column_names               = "${var.skewed_column_names}"
-#      skewed_column_value_location_maps = "${var.skewed_column_value_location_maps}"
-#      skewed_column_values              = "${var.skewed_column_values}"
-#    }
-    stored_as_sub_directories = "${var.stored_as_sub_directories}"
+      name                  = var.ser_de_info_name
+      serialization_library = var.ser_de_info_serialization_library
+      parameters = {
+        "serialization.format" = "1"
+      }
+    }
+
+    bucket_columns            = var.bucket_columns
+    sort_columns  {
+      column     = var.sort_columns[0]
+      sort_order = var.sort_columns[1]
+    }
+    stored_as_sub_directories = var.stored_as_sub_directories
   }
-  
-  partition_keys = "${var.partition_keys}"
-  
-  parameters {
-    classification               = "${var.classification}"
+
+  parameters = {
+    classification               = var.classification
     EXTERNAL                     = "TRUE"
-    convergdb_full_relation_name = "${var.convergdb_full_relation_name}"
-    convergdb_dsd                = "${var.convergdb_dsd}"
-    convergdb_storage_bucket     = "${var.convergdb_storage_bucket}"
-    convergdb_state_bucket       = "${var.convergdb_state_bucket}"
-    convergdb_storage_format     = "${var.convergdb_storage_format}"
-    convergdb_etl_job_name       = "${var.convergdb_etl_job_name}"
-    convergdb_deployment_id      = "${var.convergdb_deployment_id}"
+    convergdb_full_relation_name = var.convergdb_full_relation_name
+    convergdb_dsd                = var.convergdb_dsd
+    convergdb_storage_bucket     = var.convergdb_storage_bucket
+    convergdb_state_bucket       = var.convergdb_state_bucket
+    convergdb_storage_format     = var.convergdb_storage_format
+    convergdb_etl_job_name       = var.convergdb_etl_job_name
+    convergdb_deployment_id      = var.convergdb_deployment_id
   }
 }

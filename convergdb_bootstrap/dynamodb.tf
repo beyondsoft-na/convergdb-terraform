@@ -16,7 +16,7 @@
 
 # dynamodb table for terraform locking
 resource "aws_dynamodb_table" "lock" {
-  name           = "${var.lock_table}"
+  name           = var.lock_table
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "LockID"
@@ -29,7 +29,7 @@ resource "aws_dynamodb_table" "lock" {
 
 # dynamodb table for ETL locking
 resource "aws_dynamodb_table" "etl_lock" {
-  name           = "${var.etl_lock_table}"
+  name           = var.etl_lock_table
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "LockID"
@@ -39,3 +39,4 @@ resource "aws_dynamodb_table" "etl_lock" {
     type = "S"
   }
 }
+

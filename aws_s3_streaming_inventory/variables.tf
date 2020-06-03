@@ -14,19 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-variable "region" {}
+variable "region" {
+}
 
 # source bucket
-variable "source_bucket" {}
+variable "source_bucket" {
+}
 
 # destination bucket for firehose
-variable "destination_bucket" {}
+variable "destination_bucket" {
+}
 
 # prefix for writing output files
-variable "destination_prefix" {}
+variable "destination_prefix" {
+}
 
 # kinesis firehose stream name
-variable "firehose_stream_name" {}
+variable "firehose_stream_name" {
+}
 
 # provide lambda name
-variable "lambda_name" {}
+variable "lambda_name" {
+}
