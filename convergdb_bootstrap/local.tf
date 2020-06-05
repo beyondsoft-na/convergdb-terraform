@@ -32,7 +32,8 @@ resource "local_file" "main_backend" {
 }
 EOF
 
-  filename = "${var.backend_file_path}" # "${path.module}/../terraform/terraform.tf.json"
+
+  filename = var.backend_file_path # "${path.module}/../terraform/terraform.tf.json"
 }
 
 resource "local_file" "main_variables" {
@@ -79,5 +80,7 @@ variable "ecs_execution_role" {
 
 EOF
 
-  filename = "${var.variables_file_path}" #"${path.module}/../terraform/variables.tf"
+
+  filename = var.variables_file_path #"${path.module}/../terraform/variables.tf"
 }
+

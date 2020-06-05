@@ -15,13 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 resource "aws_glue_catalog_database" "database" {
-  name = "${var.database_name}"
+  name        = var.database_name
   description = "managed by convergdb"
   parameters = {
-    "convergdb:deployment" = "${var.deployment_id}"
+    "convergdb:deployment" = var.deployment_id
   }
 }
 
 output "database_name" {
-  value = "${aws_glue_catalog_database.database.name}"
+  value = aws_glue_catalog_database.database.name
 }
+

@@ -14,8 +14,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+locals {
+  script_object_source = templatefile(("${var.local_script}"), {
+      admin_bucket         = var.admin_bucket
+      data_bucket          = var.data_bucket
+      deployment_id        = var.deployment_id
+      region               = var.region
+      sns_topic            = var.sns_topic
+      cloudwatch_namespace = var.cloudwatch_namespace
+    }
+  )
+}
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
 
 # unique identifier for this module
 resource "random_id" "module_id" {
@@ -23,7 +35,7 @@ resource "random_id" "module_id" {
 }
 
 output "module_id" {
-  value = "${random_id.module_id.dec}"
+  value = random_id.module_id.dec
 }
 
 resource "aws_cloudformation_stack" "glue_etl_stack" {
@@ -39,7 +51,7 @@ Resources:
     Type: "AWS::Glue::Job"
     Properties:
       Name: "${var.job_name}"
-      Role: ${coalesce(var.service_role,aws_iam_role.glue_service_role.name)}
+      Role: ${coalesce(var.service_role, aws_iam_role.glue_service_role.name)}
       DefaultArguments:
         "--extra-py-files": "s3://${var.script_bucket}/${var.pyspark_library_key}"
         "--convergdb_deployment_id": ${var.deployment_id}
@@ -50,7 +62,7 @@ Resources:
       Command:
         Name: glueetl
         ScriptLocation: "s3://${var.script_bucket}/${var.script_key}"
-      AllocatedCapacity: ${var.dpu}
+      MaxCapacity: ${var.dpu}
 
   ScheduledGlueTrigger:
     Type: "AWS::Glue::Trigger"
@@ -62,16 +74,17 @@ Resources:
         - JobName: !Ref GlueJob
 STACK
 
+
   depends_on = [
-    "aws_s3_bucket_object.script_object",
-    "aws_s3_bucket_object.library_object",
-    "aws_iam_role_policy_attachment.attach_glue_service",
-    "aws_iam_role_policy.s3_access",
+    aws_s3_bucket_object.script_object,
+    aws_s3_bucket_object.library_object,
+    aws_iam_role_policy_attachment.attach_glue_service,
+    aws_iam_role_policy.s3_access,
   ]
 
-  tags {
-    "convergdb:deployment" = "${var.deployment_id}"
-    "convergdb:module"     = "${random_id.module_id.dec}"
+  tags = {
+    "convergdb:deployment" = var.deployment_id
+    "convergdb:module"     = random_id.module_id.dec
   }
 }
 
@@ -93,16 +106,17 @@ resource "aws_iam_role" "glue_service_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy_attachment" "attach_glue_service" {
-  role       = "${aws_iam_role.glue_service_role.name}"
+  role       = aws_iam_role.glue_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
 resource "aws_iam_role_policy" "s3_access" {
   name = "convergdb-${var.job_name}-s3-access-policy-${random_id.module_id.dec}"
-  role = "${aws_iam_role.glue_service_role.name}"
+  role = aws_iam_role.glue_service_role.name
 
   policy = <<EOF
 {
@@ -175,41 +189,29 @@ resource "aws_iam_role_policy" "s3_access" {
   ]
 }
 EOF
-}
 
-data "template_file" "script_object_source" {
-  template = "${file("${var.local_script}")}"
-
-  vars {
-    admin_bucket = "${var.admin_bucket}"
-    data_bucket = "${var.data_bucket}"
-    deployment_id = "${var.deployment_id}"
-    region = "${var.region}"
-    sns_topic = "${var.sns_topic}"
-    cloudwatch_namespace = "${var.cloudwatch_namespace}"
-  }
 }
 
 resource "aws_s3_bucket_object" "script_object" {
-  bucket   = "${var.script_bucket}"
-  key      = "${var.script_key}"
-  content  = "${data.template_file.script_object_source.rendered}"
-  etag     = "${md5("${data.template_file.script_object_source.rendered}")}"
+  bucket  = var.script_bucket
+  key     = var.script_key
+  content = local.script_object_source
+  etag    = md5(local.script_object_source)
 
-  tags {
-    "convergdb:deployment" = "${var.deployment_id}"
-    "convergdb:module"     = "${random_id.module_id.dec}"
+  tags = {
+    "convergdb:deployment" = var.deployment_id
+    "convergdb:module"     = random_id.module_id.dec
   }
 }
 
 resource "aws_s3_bucket_object" "library_object" {
-  bucket   = "${var.script_bucket}"
-  key      = "${var.pyspark_library_key}"
-  source   = "${var.local_pyspark_library}"
-  etag     = "${md5(file("${var.local_pyspark_library}"))}"
+  bucket = var.script_bucket
+  key    = var.pyspark_library_key
+  source = var.local_pyspark_library
+  etag   = filemd5(var.local_pyspark_library)
 
-  tags {
-    "convergdb:deployment" = "${var.deployment_id}"
-    "convergdb:module"     = "${random_id.module_id.dec}"
+  tags = {
+    "convergdb:deployment" = var.deployment_id
+    "convergdb:module"     = random_id.module_id.dec
   }
 }

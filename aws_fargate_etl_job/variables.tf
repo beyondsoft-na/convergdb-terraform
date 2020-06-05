@@ -14,28 +14,70 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-variable "region" {}
-variable "deployment_id" { } 
-variable "etl_job_name" {} 
-variable "etl_job_schedule" {} 
-variable "etl_lock_table" {}
+variable "region" {
+}
 
-variable "local_script" {}
-variable "local_pyspark_library" {}
-variable "script_bucket" {}
-variable "script_key" {}
-variable "pyspark_library_key" {}
-variable "lambda_trigger_key" {}
+variable "deployment_id" {
+}
 
-variable "admin_bucket" {}
-variable "data_bucket" {}
-variable "cloudwatch_namespace" {}
-variable "sns_topic" {}
+variable "etl_job_name" {
+}
 
-variable "ecs_subnet" {}
-variable "ecs_cluster" {} 
-variable "ecs_log_group" {}
-variable "docker_image" {}
-variable "execution_task_role" {}
-variable "fargate_cpu" { default = 1024 }
-variable "fargate_memory"{ default = 4096 }
+variable "etl_job_schedule" {
+}
+
+variable "etl_lock_table" {
+}
+
+variable "local_script" {
+}
+
+variable "local_pyspark_library" {
+}
+
+variable "script_bucket" {
+}
+
+variable "script_key" {
+}
+
+variable "pyspark_library_key" {
+}
+
+variable "lambda_trigger_key" {
+}
+
+variable "admin_bucket" {
+}
+
+variable "data_bucket" {
+}
+
+variable "cloudwatch_namespace" {
+}
+
+variable "sns_topic" {
+}
+
+variable "ecs_subnet" {
+}
+
+variable "ecs_cluster" {
+}
+
+variable "ecs_log_group" {
+}
+
+variable "docker_image" {
+}
+
+variable "execution_task_role" {
+}
+
+variable "fargate_cpu" {
+  default = 1024
+}
+
+variable "fargate_memory" {
+  default = 4096
+}
