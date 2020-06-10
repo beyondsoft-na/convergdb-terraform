@@ -15,21 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 resource "aws_glue_catalog_table" "table" {
-  name          = var.table_name
-  database_name = var.database_name
-  table_type    = var.table_type
-  partition_keys {
-    name     = var.partition_keys[0]
-    type     = var.partition_keys[1]
-    comment  = var.partition_keys[2]
-  } 
+  name           = var.table_name
+  database_name  = var.database_name
+  table_type     = var.table_type
+  partition_keys = var.partition_keys
 
   storage_descriptor {
-    columns {
-      name     = var.columns[0]
-      type     = var.columns[1]
-      comment  = var.columns[2]
-    }
+    columns           = var.columns
     location          = var.location
     input_format      = var.input_format
     output_format     = var.output_format
@@ -45,10 +37,7 @@ resource "aws_glue_catalog_table" "table" {
     }
 
     bucket_columns            = var.bucket_columns
-    sort_columns  {
-      column     = var.sort_columns[0]
-      sort_order = var.sort_columns[1]
-    }
+    sort_columns              = var.sort_columns
     stored_as_sub_directories = var.stored_as_sub_directories
   }
 
