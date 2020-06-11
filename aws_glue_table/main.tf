@@ -18,10 +18,24 @@ resource "aws_glue_catalog_table" "table" {
   name           = var.table_name
   database_name  = var.database_name
   table_type     = var.table_type
-  partition_keys = var.partition_keys
+  dynamic "partition_keys" {
+    for_each = var.partition_keys 
+    content {
+      name = partition_keys.value["name"]
+      type = partition_keys.value["type"]
+      comment = partition_keys.value["comment"]
+    }
+  }
 
   storage_descriptor {
-    columns           = var.columns
+    dynamic "columns" {
+      for_each = var.columns
+      content {
+        name = columns.value["name"]
+        type = columns.value["type"]
+        comment = columns.value["comment"]
+      }
+    }
     location          = var.location
     input_format      = var.input_format
     output_format     = var.output_format
@@ -37,7 +51,13 @@ resource "aws_glue_catalog_table" "table" {
     }
 
     bucket_columns            = var.bucket_columns
-    sort_columns              = var.sort_columns
+    dynamic "sort_columns" {
+      for_each = var.sort_columns
+      content {
+        column     = sort_columns.value["column"]
+        sort_order = sort_columns.value["sort_order"]
+      }
+    }
     stored_as_sub_directories = var.stored_as_sub_directories
   }
 

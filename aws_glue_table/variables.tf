@@ -29,7 +29,7 @@ variable "table_type" {
 #
 
 variable "columns" {
-  type = list(string)
+  type = list(map(string))
 }
 
 variable "location" { # (Optional) The physical location of the table. By default this takes the form of the warehouse location, followed by the database location in the warehouse, followed by the table name.
@@ -59,7 +59,7 @@ variable "bucket_columns" { # (Optional) A list of reducer grouping columns, clu
 }
 
 variable "sort_columns" { # (Optional) A list of Order objects specifying the sort order of each bucket in the table.
-  type    = list(string)
+  type    = list(map(string))
   default = []
 }
 
@@ -86,7 +86,7 @@ variable "stored_as_sub_directories" { # (Optional) True if the table data is st
 #
 
 variable "partition_keys" {
-  type = list(string)
+  type = list(map(string))
 }
 
 #
