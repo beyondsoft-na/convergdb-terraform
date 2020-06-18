@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 locals {
-  script_object_source = templatefile(("${path.module}/${var.local_script}"), {
+  script_object_source = templatefile(("${var.local_script}"), {
       admin_bucket         = var.admin_bucket
       data_bucket          = var.data_bucket
       deployment_id        = var.deployment_id
