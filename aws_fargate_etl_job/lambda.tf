@@ -74,6 +74,7 @@ resource "aws_lambda_function" "test_lambda" {
   source_code_hash               = data.archive_file.lambda_package.output_base64sha256
   handler                        = "convergdb-trigger.handler"
   runtime                        = "python2.7"
+  timeout                        = "300"
   reserved_concurrent_executions = 1
 }
 
